@@ -1,0 +1,8 @@
+import {
+  "kitsu_extractor/interface/wasi/http/types" @http,
+  "kitsu_extractor/interface/wasi/http/outgoing-handler" @outgoing,
+  "kitsu_extractor/interface/wasi/io/streams",
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+}

@@ -1,0 +1,5 @@
+package nero:kitsu-extension-cpp;
+
+world bindings {
+    include nero:extension/extension@0.1.0-draft;
+}

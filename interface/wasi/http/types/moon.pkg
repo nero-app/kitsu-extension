@@ -1,0 +1,7 @@
+warnings = "-44"
+
+import {
+  "kitsu_extractor/interface/wasi/io/error",
+  "kitsu_extractor/interface/wasi/io/poll",
+  "kitsu_extractor/interface/wasi/io/streams",
+}

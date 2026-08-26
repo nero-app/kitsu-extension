@@ -1,0 +1,27 @@
+warnings = "-44"
+
+import {
+  "kitsu_extractor/gen/interface/nero/extension/extractor",
+}
+
+options(
+  link: {
+    "wasm": {
+      "export-memory-name": "memory",
+      "heap-start-address": 16,
+      "exports": [
+        "mbt_ffi_cabi_realloc:cabi_realloc",
+        "wasmExportFilters:nero:extension/extractor@0.1.0-draft#filters",
+        "wasmExportFiltersPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#filters",
+        "wasmExportGetSeriesEpisodes:nero:extension/extractor@0.1.0-draft#get-series-episodes",
+        "wasmExportGetSeriesEpisodesPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#get-series-episodes",
+        "wasmExportGetSeriesInfo:nero:extension/extractor@0.1.0-draft#get-series-info",
+        "wasmExportGetSeriesInfoPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#get-series-info",
+        "wasmExportGetSeriesVideos:nero:extension/extractor@0.1.0-draft#get-series-videos",
+        "wasmExportGetSeriesVideosPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#get-series-videos",
+        "wasmExportSearch:nero:extension/extractor@0.1.0-draft#search",
+        "wasmExportSearchPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#search",
+      ],
+    },
+  },
+)

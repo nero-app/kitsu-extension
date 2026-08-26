@@ -1,0 +1,1 @@
+extension = { url = "https://github.com/nero-app/nero-extension/archive/main.tar.gz", prefix = "nero-extension-main/definitions/extension" }
