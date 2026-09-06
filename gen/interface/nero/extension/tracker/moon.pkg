@@ -1,0 +1,8 @@
+import {
+  "kitsu_extractor/interface/nero/extension/types",
+  "kitsu_extractor/interface/wasi/http/types" @types0,
+  "kitsu_extractor/kitsu",
+  "moonbitlang/core/json",
+}
+
+warnings = "-44"

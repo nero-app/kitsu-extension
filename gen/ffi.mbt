@@ -48,14 +48,31 @@ extern "wasm" fn mbt_ffi_free(position : Int) =
 
 ///|
 #doc(hidden)
-pub fn wasmExportGetSeriesInfo(p0 : Int, p1 : Int) -> Int {
-  @extractor.wasmExportGetSeriesInfo(p0, p1)
+pub fn wasmExportListEntriesPostReturn(p0 : Int) -> Unit {
+  @tracker.wasmExportListEntriesPostReturn(p0)
 }
 
 ///|
 #doc(hidden)
-pub fn wasmExportGetSeriesInfoPostReturn(p0 : Int) -> Unit {
-  @extractor.wasmExportGetSeriesInfoPostReturn(p0)
+pub fn wasmExportGetSeriesEpisodes(
+  p0 : Int,
+  p1 : Int,
+  p2 : Int,
+  p3 : Int,
+) -> Int {
+  @extractor.wasmExportGetSeriesEpisodes(p0, p1, p2, p3)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportGetSeriesVideos(p0 : Int, p1 : Int, p2 : Int, p3 : Int) -> Int {
+  @extractor.wasmExportGetSeriesVideos(p0, p1, p2, p3)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportGetSeriesInfo(p0 : Int, p1 : Int) -> Int {
+  @extractor.wasmExportGetSeriesInfo(p0, p1)
 }
 
 ///|
@@ -73,26 +90,14 @@ pub fn wasmExportSearch(
 
 ///|
 #doc(hidden)
-pub fn wasmExportGetSeriesVideosPostReturn(p0 : Int) -> Unit {
-  @extractor.wasmExportGetSeriesVideosPostReturn(p0)
+pub fn wasmExportGetSeriesInfoPostReturn(p0 : Int) -> Unit {
+  @extractor.wasmExportGetSeriesInfoPostReturn(p0)
 }
 
 ///|
 #doc(hidden)
-pub fn wasmExportSearchPostReturn(p0 : Int) -> Unit {
-  @extractor.wasmExportSearchPostReturn(p0)
-}
-
-///|
-#doc(hidden)
-pub fn wasmExportFiltersPostReturn(p0 : Int) -> Unit {
-  @extractor.wasmExportFiltersPostReturn(p0)
-}
-
-///|
-#doc(hidden)
-pub fn wasmExportGetSeriesEpisodesPostReturn(p0 : Int) -> Unit {
-  @extractor.wasmExportGetSeriesEpisodesPostReturn(p0)
+pub fn wasmExportRemoveEntryPostReturn(p0 : Int) -> Unit {
+  @tracker.wasmExportRemoveEntryPostReturn(p0)
 }
 
 ///|
@@ -103,17 +108,71 @@ pub fn wasmExportFilters() -> Int {
 
 ///|
 #doc(hidden)
-pub fn wasmExportGetSeriesVideos(p0 : Int, p1 : Int, p2 : Int, p3 : Int) -> Int {
-  @extractor.wasmExportGetSeriesVideos(p0, p1, p2, p3)
+pub fn wasmExportGetEntry(p0 : Int, p1 : Int) -> Int {
+  @tracker.wasmExportGetEntry(p0, p1)
 }
 
 ///|
 #doc(hidden)
-pub fn wasmExportGetSeriesEpisodes(
+pub fn wasmExportGetSeriesVideosPostReturn(p0 : Int) -> Unit {
+  @extractor.wasmExportGetSeriesVideosPostReturn(p0)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportGetSeriesEpisodesPostReturn(p0 : Int) -> Unit {
+  @extractor.wasmExportGetSeriesEpisodesPostReturn(p0)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportSaveEntry(
   p0 : Int,
   p1 : Int,
   p2 : Int,
   p3 : Int,
+  p4 : Int,
+  p5 : Int,
+  p6 : Int,
+  p7 : Int,
+  p8 : Int,
+  p9 : Int,
 ) -> Int {
-  @extractor.wasmExportGetSeriesEpisodes(p0, p1, p2, p3)
+  @tracker.wasmExportSaveEntry(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportFiltersPostReturn(p0 : Int) -> Unit {
+  @extractor.wasmExportFiltersPostReturn(p0)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportSaveEntryPostReturn(p0 : Int) -> Unit {
+  @tracker.wasmExportSaveEntryPostReturn(p0)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportGetEntryPostReturn(p0 : Int) -> Unit {
+  @tracker.wasmExportGetEntryPostReturn(p0)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportSearchPostReturn(p0 : Int) -> Unit {
+  @extractor.wasmExportSearchPostReturn(p0)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportListEntries(p0 : Int, p1 : Int, p2 : Int, p3 : Int) -> Int {
+  @tracker.wasmExportListEntries(p0, p1, p2, p3)
+}
+
+///|
+#doc(hidden)
+pub fn wasmExportRemoveEntry(p0 : Int, p1 : Int) -> Int {
+  @tracker.wasmExportRemoveEntry(p0, p1)
 }

@@ -1,5 +1,5 @@
 ///|
-priv struct KitsuTitlesJson {
+pub(all) struct KitsuTitlesJson {
   translated : KitsuNullableJson[String]
   romanized : KitsuNullableJson[String]
   original : KitsuNullableJson[String]
@@ -21,7 +21,7 @@ fn KitsuTitlesJson::preferred(self : KitsuTitlesJson) -> String? {
 }
 
 ///|
-priv struct KitsuLocalizedJson {
+pub(all) struct KitsuLocalizedJson {
   en : KitsuNullableJson[String]?
   en_us : KitsuNullableJson[String]?
   en_jp : KitsuNullableJson[String]?
@@ -45,22 +45,22 @@ fn KitsuLocalizedJson::preferred(self : KitsuLocalizedJson) -> String? {
 }
 
 ///|
-priv struct KitsuOriginalImageJson {
+pub(all) struct KitsuOriginalImageJson {
   url : String
 } derive(FromJson)
 
 ///|
-priv struct KitsuImageJson {
+pub(all) struct KitsuImageJson {
   original : KitsuOriginalImageJson
 } derive(FromJson)
 
 ///|
-priv struct KitsuSeriesJson {
+pub(all) struct KitsuSeriesJson {
   id : String
   titles : KitsuTitlesJson
   description : KitsuLocalizedJson
   poster_image : KitsuNullableJson[KitsuImageJson]
-  subtype : String
+  subtype : KitsuNullableJson[String]?
 } derive(FromJson(fields(poster_image(rename="posterImage"))))
 
 ///|
@@ -78,13 +78,13 @@ priv struct KitsuPageInfoJson {
 } derive(FromJson(fields(has_next_page(rename="hasNextPage"))))
 
 ///|
-priv enum KitsuNullableJson[T] {
+pub(all) enum KitsuNullableJson[T] {
   NullValue
   Value(T)
 }
 
 ///|
-impl[T : FromJson] FromJson for KitsuNullableJson[T] with fn from_json(
+pub impl[T : FromJson] FromJson for KitsuNullableJson[T] with fn from_json(
   json,
   path,
 ) {
@@ -95,7 +95,23 @@ impl[T : FromJson] FromJson for KitsuNullableJson[T] with fn from_json(
 }
 
 ///|
-fn[T] KitsuNullableJson::to_option(self : KitsuNullableJson[T]) -> T? {
+pub impl[T : ToJson] ToJson for KitsuNullableJson[T] with fn to_json(self) {
+  match self {
+    Value(value) => @json.to_json(value)
+    NullValue => (null : Json)
+  }
+}
+
+///|
+pub fn[T] KitsuNullableJson::from_option(value : T?) -> KitsuNullableJson[T] {
+  match value {
+    Some(value) => Value(value)
+    None => NullValue
+  }
+}
+
+///|
+pub fn[T] KitsuNullableJson::to_option(self : KitsuNullableJson[T]) -> T? {
   match self {
     Value(item) => Some(item)
     NullValue => None
@@ -131,28 +147,36 @@ priv struct KitsuEpisodesDataJson {
 ///|
 priv struct KitsuResponse[T] {
   data : KitsuNullableJson[T]?
-  errors : Array[Json]?
+  errors : KitsuNullableJson[Array[Json]]?
 } derive(FromJson)
 
 ///|
 fn[T] KitsuResponse::into_data(
   self : KitsuResponse[T],
 ) -> Result[T, @types.Error_] {
+  let errors = self.errors.bind(value => value.to_option()).unwrap_or([])
+  if !errors.is_empty() {
+    return Err(graphql_errors(errors))
+  }
   guard self.data is Some(response_data) &&
     response_data.to_option() is Some(data) else {
-    let message = match self.errors {
-      Some(errors) if !errors.is_empty() =>
-        "Kitsu GraphQL error: " + @json.to_json(errors).stringify()
-      _ => "Kitsu GraphQL response contains no data"
-    }
-    return Err(@types.Error_::Other(Some(message)))
+    return Err(
+      @types.Error_::Other(Some("Kitsu GraphQL response contains no data")),
+    )
   }
   Ok(data)
 }
 
 ///|
-fn[T : FromJson] decode_response(json : Json) -> Result[T, @types.Error_] {
-  let response : KitsuResponse[T] = @json.from_json(json) catch {
+pub fn[T : FromJson] decode_response(json : Json) -> Result[T, @types.Error_] {
+  decode_json(json)
+  .bind((response : KitsuResponse[Json]) => response.into_data())
+  .bind(data => decode_json(data))
+}
+
+///|
+fn[T : FromJson] decode_json(json : Json) -> Result[T, @types.Error_] {
+  let value : T = @json.from_json(json) catch {
     error =>
       return Err(
         @types.Error_::Other(
@@ -160,20 +184,20 @@ fn[T : FromJson] decode_response(json : Json) -> Result[T, @types.Error_] {
         ),
       )
   }
-  response.into_data()
+  Ok(value)
 }
 
 ///|
-fn[T, U] paginate(
-  source : KitsuConnectionJson[T],
+fn[T, U] KitsuConnectionJson::paginate(
+  self : KitsuConnectionJson[T],
   convert : (T) -> U?,
 ) -> (Array[U], Bool) {
-  let nodes = source.nodes.to_option().unwrap_or([])
+  let nodes = self.nodes.to_option().unwrap_or([])
   let items = nodes
     .iter()
     .filter_map(node => node.to_option().bind(convert))
     .collect()
-  (items, source.page_info.has_next_page)
+  (items, self.page_info.has_next_page)
 }
 
 ///|
@@ -200,7 +224,7 @@ fn KitsuImageJson::into_media_resource(
 }
 
 ///|
-fn KitsuSeriesJson::into_nero(self : KitsuSeriesJson) -> @types.Series {
+pub fn KitsuSeriesJson::into_nero(self : KitsuSeriesJson) -> @types.Series {
   @types.Series::{
     id: self.id,
     title: self.titles.preferred().unwrap_or(""),
@@ -208,7 +232,7 @@ fn KitsuSeriesJson::into_nero(self : KitsuSeriesJson) -> @types.Series {
     .to_option()
     .bind(image => image.into_media_resource()),
     synopsis: self.description.preferred(),
-    type_: Some(self.subtype),
+    type_: self.subtype.bind(value => value.to_option()),
   }
 }
 
@@ -244,13 +268,12 @@ fn @types.Series::from_json(
 fn @types.SeriesPage::from_json(
   json : Json,
 ) -> Result[@types.SeriesPage, @types.Error_] {
-  let data : KitsuSearchDataJson = match decode_response(json) {
-    Ok(data) => data
-    Err(error) => return Err(error)
-  }
-  let source = data.search_anime_by_title
-  let (series, has_next_page) = paginate(source, item => Some(item.into_nero()))
-  Ok(@types.SeriesPage::{ series, has_next_page })
+  decode_response(json).map((data : KitsuSearchDataJson) => {
+    let (series, has_next_page) = data.search_anime_by_title.paginate(item => {
+      Some(item.into_nero())
+    })
+    @types.SeriesPage::{ series, has_next_page }
+  })
 }
 
 ///|
@@ -265,6 +288,6 @@ fn @types.EpisodesPage::from_json(
     return Err(@types.Error_::NotFound)
   }
   let source = anime.episodes
-  let (episodes, has_next_page) = paginate(source, item => item.into_nero())
+  let (episodes, has_next_page) = source.paginate(item => item.into_nero())
   Ok(@types.EpisodesPage::{ episodes, has_next_page })
 }

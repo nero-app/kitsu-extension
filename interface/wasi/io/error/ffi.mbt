@@ -7,10 +7,6 @@ fn wasmImportResourceDropError_(resource : Int) = "wasi:io/error@0.2.7" "[resour
 fn wasmImportMethodErrorToDebugString(p0 : Int, p1 : Int) = "wasi:io/error@0.2.7" "[method]error.to-debug-string"
 
 ///|
-extern "wasm" fn mbt_ffi_load32(offset : Int) -> Int =
-  #|(func (param i32) (result i32) local.get 0 i32.load)
-
-///|
 extern "wasm" fn mbt_ffi_ptr2str(ptr : Int, len : Int) -> String =
   #|(func (param i32) (param i32) (result i32)
   #| local.get 0
@@ -20,6 +16,10 @@ extern "wasm" fn mbt_ffi_ptr2str(ptr : Int, len : Int) -> String =
 ///|
 extern "wasm" fn mbt_ffi_free(position : Int) =
   #|(func (param i32) local.get 0 call $moonbit.decref)
+
+///|
+extern "wasm" fn mbt_ffi_load32(offset : Int) -> Int =
+  #|(func (param i32) (result i32) local.get 0 i32.load)
 
 ///|
 extern "wasm" fn mbt_ffi_malloc(size : Int) -> Int =

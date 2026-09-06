@@ -1,0 +1,8 @@
+import {
+  "kitsu_extractor/request",
+  "kitsu_extractor/interface/nero/extension/types",
+  "kitsu_extractor/interface/nero/portal/interaction",
+  "kitsu_extractor/interface/nero/keyvalue-ttl/store",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+}
