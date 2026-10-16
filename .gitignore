@@ -1,3 +1,4 @@
 /_build/
 /target/
 /output.wasm
+*.local.mbt

@@ -44,11 +44,3 @@ pub fn get_series_episodes(
     @types.EpisodesPage::from_json(json, cursor)
   })
 }
-
-///|
-pub fn get_series_videos(
-  _series_id : String,
-  _episode_id : String,
-) -> Result[Array[@types.Video], @types.Error_] {
-  Ok([])
-}
