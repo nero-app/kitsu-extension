@@ -1,9 +1,11 @@
-warnings = "-44"
-
 import {
   "kitsu_extractor/gen/interface/nero/extension/extractor",
   "kitsu_extractor/gen/interface/nero/extension/tracker",
 }
+
+warnings = "-44"
+
+pkgtype(kind: "foreign_library")
 
 options(
   link: {
@@ -12,24 +14,24 @@ options(
       "heap-start-address": 16,
       "exports": [
         "mbt_ffi_cabi_realloc:cabi_realloc",
-        "wasmExportFilters:nero:extension/extractor@0.1.0-draft#filters",
-        "wasmExportFiltersPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#filters",
-        "wasmExportGetEntry:nero:extension/tracker@0.1.0-draft#get-entry",
-        "wasmExportGetEntryPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft#get-entry",
-        "wasmExportGetSeriesEpisodes:nero:extension/extractor@0.1.0-draft#get-series-episodes",
-        "wasmExportGetSeriesEpisodesPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#get-series-episodes",
-        "wasmExportGetSeriesInfo:nero:extension/extractor@0.1.0-draft#get-series-info",
-        "wasmExportGetSeriesInfoPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#get-series-info",
-        "wasmExportGetSeriesVideos:nero:extension/extractor@0.1.0-draft#get-series-videos",
-        "wasmExportGetSeriesVideosPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#get-series-videos",
-        "wasmExportListEntries:nero:extension/tracker@0.1.0-draft#list-entries",
-        "wasmExportListEntriesPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft#list-entries",
-        "wasmExportRemoveEntry:nero:extension/tracker@0.1.0-draft#remove-entry",
-        "wasmExportRemoveEntryPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft#remove-entry",
-        "wasmExportSaveEntry:nero:extension/tracker@0.1.0-draft#save-entry",
-        "wasmExportSaveEntryPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft#save-entry",
-        "wasmExportSearch:nero:extension/extractor@0.1.0-draft#search",
-        "wasmExportSearchPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft#search",
+        "wasmExportFilters:nero:extension/extractor@0.1.0-draft-2026-10-15#filters",
+        "wasmExportFiltersPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft-2026-10-15#filters",
+        "wasmExportGetEntry:nero:extension/tracker@0.1.0-draft-2026-10-15#get-entry",
+        "wasmExportGetEntryPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft-2026-10-15#get-entry",
+        "wasmExportGetSeriesEpisodes:nero:extension/extractor@0.1.0-draft-2026-10-15#get-series-episodes",
+        "wasmExportGetSeriesEpisodesPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft-2026-10-15#get-series-episodes",
+        "wasmExportGetSeriesInfo:nero:extension/extractor@0.1.0-draft-2026-10-15#get-series-info",
+        "wasmExportGetSeriesInfoPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft-2026-10-15#get-series-info",
+        "wasmExportGetSeriesVideos:nero:extension/extractor@0.1.0-draft-2026-10-15#get-series-videos",
+        "wasmExportGetSeriesVideosPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft-2026-10-15#get-series-videos",
+        "wasmExportListEntries:nero:extension/tracker@0.1.0-draft-2026-10-15#list-entries",
+        "wasmExportListEntriesPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft-2026-10-15#list-entries",
+        "wasmExportRemoveEntry:nero:extension/tracker@0.1.0-draft-2026-10-15#remove-entry",
+        "wasmExportRemoveEntryPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft-2026-10-15#remove-entry",
+        "wasmExportSaveEntry:nero:extension/tracker@0.1.0-draft-2026-10-15#save-entry",
+        "wasmExportSaveEntryPostReturn:cabi_post_nero:extension/tracker@0.1.0-draft-2026-10-15#save-entry",
+        "wasmExportSearch:nero:extension/extractor@0.1.0-draft-2026-10-15#search",
+        "wasmExportSearchPostReturn:cabi_post_nero:extension/extractor@0.1.0-draft-2026-10-15#search",
       ],
     },
   },

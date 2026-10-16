@@ -1,5 +1,5 @@
-warnings = "-44"
-
 import {
   "kitsu_extractor/interface/wasi/io/poll",
 }
+
+warnings = "-44"

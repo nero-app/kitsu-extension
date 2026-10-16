@@ -3,7 +3,5 @@ import {
   "kitsu_extractor/interface/wasi/http/types" @types0,
   "kitsu_extractor/request",
   "kitsu_extractor/session",
-  "moonbitlang/core/encoding/base64",
-  "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/json",
 }

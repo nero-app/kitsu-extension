@@ -168,7 +168,7 @@ fn login() -> Result[Token, @types.Error_] {
 }
 
 ///|
-pub fn access_token(refresh? : Bool = false) -> Result[String, @types.Error_] {
+pub fn access_token(refresh~ : Bool = false) -> Result[String, @types.Error_] {
   let stored = match Token::load() {
     Ok(stored) => stored
     Err(error) => return Err(error)

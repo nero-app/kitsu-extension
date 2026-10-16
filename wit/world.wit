@@ -1,6 +1,11 @@
 package nero:kitsu-extension-cpp;
 
 world bindings {
-    include nero:extension/extension@0.1.0-draft;
-    export nero:extension/tracker@0.1.0-draft;
+    include nero:extension/extension@0.1.0-draft-2026-10-15;
+    include nero:keyvalue-ttl/imports@0.1.0-draft-2026-10-15;
+    include nero:portal/imports@0.1.0-draft-2026-10-15;
+
+    import wasi:http/outgoing-handler@0.2.7;
+
+    export nero:extension/tracker@0.1.0-draft-2026-10-15;
 }

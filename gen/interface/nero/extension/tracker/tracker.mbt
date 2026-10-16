@@ -42,7 +42,7 @@ pub fn list_entries(
   } else {
     None
   }
-  Ok({ entries, cursor: next })
+  Ok({ entries, cursor: next, })
 }
 
 ///|
@@ -102,7 +102,7 @@ pub fn save_entry(
     None =>
       (
         CREATE_ENTRY_MUTATION,
-        { ..input, media_id: Some(series_id), media_type: Some("ANIME") },
+        { ..input, media_id: Some(series_id), media_type: Some("ANIME"), },
       )
   }
   let variables : Json = { "input": @json.to_json(input) }

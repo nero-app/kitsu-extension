@@ -9,7 +9,7 @@ const SEARCH_ANIME_QUERY : String =
   #|      posterImage { original { url } }
   #|      subtype
   #|    }
-  #|    pageInfo { hasNextPage }
+  #|    pageInfo { hasNextPage endCursor }
   #|  }
   #|}
 
@@ -37,7 +37,7 @@ const ANIME_EPISODES_QUERY : String =
   #|        description(locales: ["en", "en_us", "en_jp", "ja_jp"])
   #|        thumbnail { original { url } }
   #|      }
-  #|      pageInfo { hasNextPage }
+  #|      pageInfo { hasNextPage endCursor }
   #|    }
   #|  }
   #|}

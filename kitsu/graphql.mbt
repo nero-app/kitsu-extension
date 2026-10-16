@@ -5,7 +5,7 @@ const KITSU_GRAPHQL_ENDPOINT = "https://kitsu.io/api/graphql"
 fn execute_query(
   query : String,
   variables : Json,
-  token? : String? = None,
+  token~ : String? = None,
 ) -> Result[Json, @types.Error_] {
   let request = @request.Request::new(
     @request.Method::Post,

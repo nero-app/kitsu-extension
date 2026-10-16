@@ -3,9 +3,9 @@ priv struct LibraryEntryJson {
   id : String
   media : @kitsu.KitsuNullableJson[@kitsu.KitsuSeriesJson]
   status : String
-  progress : Int
-  rating : @kitsu.KitsuNullableJson[Int]
-  reconsume_count : Int
+  progress : Int32
+  rating : @kitsu.KitsuNullableJson[Int32]
+  reconsume_count : Int32
   reconsuming : Bool
   notes : @kitsu.KitsuNullableJson[String]
 } derive(FromJson(fields(reconsume_count(rename="reconsumeCount"))))
@@ -16,9 +16,9 @@ priv struct LibraryEntryInput {
   media_id : String?
   media_type : String?
   status : String
-  progress : UInt
-  rating : @kitsu.KitsuNullableJson[Int]
-  reconsume_count : UInt
+  progress : UInt32
+  rating : @kitsu.KitsuNullableJson[Int32]
+  reconsume_count : UInt32
   reconsuming : Bool
   notes : @kitsu.KitsuNullableJson[String]
 } derive (
@@ -172,7 +172,7 @@ fn EntryDetails::to_kitsu(
       @types.Error_::Other(Some("Tracking counts exceed Kitsu limits")),
     )
   }
-  let rating : Int? = match self.score {
+  let rating : Int32? = match self.score {
     None => None
     Some(score) if score.to_int() >= 1 && score.to_int() <= 100 => {
       let rating = (score.to_int() + 2) / 5

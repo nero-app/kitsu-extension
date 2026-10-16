@@ -53,7 +53,7 @@ pub fn RequestError::message(self : RequestError) -> String {
 
 ///|
 pub(all) struct Response {
-  status_code : UInt
+  status_code : UInt32
   headers : Array[(String, Bytes)]
   body : Bytes
 }
@@ -98,7 +98,7 @@ pub struct Request {
 
 ///|
 pub fn Request::new(method_ : Method, url : String) -> Request {
-  { method_, url, headers: [], body: None, follow_redirects: true }
+  { method_, url, headers: [], body: None, follow_redirects: true, }
 }
 
 ///|
@@ -263,7 +263,7 @@ fn Request::execute(
   let trailers = @http.IncomingBody::finish(body)
   trailers.drop()
   incoming.drop()
-  Ok({ status_code, headers, body: content.to_bytes() })
+  Ok({ status_code, headers, body: content.to_bytes(), })
 }
 
 ///|

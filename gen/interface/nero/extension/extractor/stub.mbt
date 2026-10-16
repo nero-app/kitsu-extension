@@ -6,10 +6,10 @@ pub fn filters() -> Result[Array[@types.FilterCategory], @types.Error_] {
 ///|
 pub fn search(
   query : String,
-  page : UInt?,
+  cursor : String?,
   filters : Array[@types.SearchFilter],
 ) -> Result[@types.SeriesPage, @types.Error_] {
-  @kitsu.search(query, page, filters)
+  @kitsu.search(query, cursor, filters)
 }
 
 ///|
@@ -22,9 +22,9 @@ pub fn get_series_info(
 ///|
 pub fn get_series_episodes(
   series_id : String,
-  page : UInt?,
+  cursor : String?,
 ) -> Result[@types.EpisodesPage, @types.Error_] {
-  @kitsu.get_series_episodes(series_id, page)
+  @kitsu.get_series_episodes(series_id, cursor)
 }
 
 ///|

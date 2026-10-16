@@ -6,6 +6,9 @@ pub(all) struct KitsuTitlesJson {
 } derive(FromJson)
 
 ///|
+pub extend KitsuTitlesJson with @json.FromJson::{from_json}
+
+///|
 fn KitsuTitlesJson::preferred(self : KitsuTitlesJson) -> String? {
   for
     value in [
@@ -29,6 +32,9 @@ pub(all) struct KitsuLocalizedJson {
 } derive(FromJson)
 
 ///|
+pub extend KitsuLocalizedJson with @json.FromJson::{from_json}
+
+///|
 fn KitsuLocalizedJson::preferred(self : KitsuLocalizedJson) -> String? {
   for
     value in [
@@ -50,9 +56,15 @@ pub(all) struct KitsuOriginalImageJson {
 } derive(FromJson)
 
 ///|
+pub extend KitsuOriginalImageJson with @json.FromJson::{from_json}
+
+///|
 pub(all) struct KitsuImageJson {
   original : KitsuOriginalImageJson
 } derive(FromJson)
+
+///|
+pub extend KitsuImageJson with @json.FromJson::{from_json}
 
 ///|
 pub(all) struct KitsuSeriesJson {
@@ -64,9 +76,12 @@ pub(all) struct KitsuSeriesJson {
 } derive(FromJson(fields(poster_image(rename="posterImage"))))
 
 ///|
+pub extend KitsuSeriesJson with @json.FromJson::{from_json}
+
+///|
 priv struct KitsuEpisodeJson {
   id : String
-  number : Int
+  number : Int32
   titles : KitsuTitlesJson
   description : KitsuLocalizedJson
   thumbnail : KitsuNullableJson[KitsuImageJson]
@@ -75,7 +90,12 @@ priv struct KitsuEpisodeJson {
 ///|
 priv struct KitsuPageInfoJson {
   has_next_page : Bool
-} derive(FromJson(fields(has_next_page(rename="hasNextPage"))))
+  end_cursor : KitsuNullableJson[String]
+} derive (
+  FromJson(
+    fields(has_next_page(rename="hasNextPage"), end_cursor(rename="endCursor")),
+  ),
+)
 
 ///|
 pub(all) enum KitsuNullableJson[T] {
@@ -101,6 +121,12 @@ pub impl[T : ToJson] ToJson for KitsuNullableJson[T] with fn to_json(self) {
     NullValue => (null : Json)
   }
 }
+
+///|
+pub extend KitsuNullableJson with @json.FromJson::{from_json}
+
+///|
+pub extend KitsuNullableJson with ToJson::{to_json}
 
 ///|
 pub fn[T] KitsuNullableJson::from_option(value : T?) -> KitsuNullableJson[T] {
@@ -190,14 +216,28 @@ fn[T : FromJson] decode_json(json : Json) -> Result[T, @types.Error_] {
 ///|
 fn[T, U] KitsuConnectionJson::paginate(
   self : KitsuConnectionJson[T],
+  cursor : String?,
   convert : (T) -> U?,
-) -> (Array[U], Bool) {
+) -> Result[(Array[U], String?), @types.Error_] {
   let nodes = self.nodes.to_option().unwrap_or([])
   let items = nodes
     .iter()
     .filter_map(node => node.to_option().bind(convert))
     .collect()
-  (items, self.page_info.has_next_page)
+  let next = if self.page_info.has_next_page {
+    guard self.page_info.end_cursor.to_option() is Some(next) &&
+      Some(next) != cursor else {
+      return Err(
+        @types.Error_::Other(
+          Some("Kitsu returned an invalid continuation cursor"),
+        ),
+      )
+    }
+    Some(next)
+  } else {
+    None
+  }
+  Ok((items, next))
 }
 
 ///|
@@ -267,18 +307,24 @@ fn @types.Series::from_json(
 ///|
 fn @types.SeriesPage::from_json(
   json : Json,
+  cursor : String?,
 ) -> Result[@types.SeriesPage, @types.Error_] {
-  decode_response(json).map((data : KitsuSearchDataJson) => {
-    let (series, has_next_page) = data.search_anime_by_title.paginate(item => {
-      Some(item.into_nero())
-    })
-    @types.SeriesPage::{ series, has_next_page }
+  let data : KitsuSearchDataJson = match decode_response(json) {
+    Ok(data) => data
+    Err(error) => return Err(error)
+  }
+  data.search_anime_by_title
+  .paginate(cursor, item => Some(item.into_nero()))
+  .map(page => {
+    let (series, cursor) = page
+    @types.SeriesPage::{ series, cursor, }
   })
 }
 
 ///|
 fn @types.EpisodesPage::from_json(
   json : Json,
+  cursor : String?,
 ) -> Result[@types.EpisodesPage, @types.Error_] {
   let data : KitsuEpisodesDataJson = match decode_response(json) {
     Ok(data) => data
@@ -288,6 +334,10 @@ fn @types.EpisodesPage::from_json(
     return Err(@types.Error_::NotFound)
   }
   let source = anime.episodes
-  let (episodes, has_next_page) = source.paginate(item => item.into_nero())
-  Ok(@types.EpisodesPage::{ episodes, has_next_page })
+  source
+  .paginate(cursor, item => item.into_nero())
+  .map(page => {
+    let (episodes, cursor) = page
+    @types.EpisodesPage::{ episodes, cursor, }
+  })
 }

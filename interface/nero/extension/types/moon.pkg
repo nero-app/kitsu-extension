@@ -1,5 +1,5 @@
-warnings = "-44"
-
 import {
-  "kitsu_extractor/interface/wasi/http/types",
+  "kitsu_extractor/interface/wasi/http/types" @http,
 }
+
+warnings = "-44"
