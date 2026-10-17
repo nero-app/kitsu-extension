@@ -2,27 +2,41 @@
 const KITSU_GRAPHQL_ENDPOINT = "https://kitsu.io/api/graphql"
 
 ///|
-fn execute_query(
+pub struct GraphQLRequest[V] {
+  query : String
+  variables : V
+} derive(ToJson)
+
+///|
+pub extend GraphQLRequest with ToJson::{to_json}
+
+///|
+pub fn[V] GraphQLRequest::new(
   query : String,
-  variables : Json,
-  token~ : String? = None,
+  variables : V,
+) -> GraphQLRequest[V] {
+  { query, variables, }
+}
+
+///|
+pub fn[V : ToJson] GraphQLRequest::send(
+  self : GraphQLRequest[V],
 ) -> Result[Json, @types.Error_] {
-  let request = @request.Request::new(
-    @request.Method::Post,
-    KITSU_GRAPHQL_ENDPOINT,
-  ).follow_redirects(false)
-  match request.header("Accept", "application/json") {
-    Ok(_) => ()
-    Err(error) => return Err(error.into_nero())
-  }
-  if token is Some(token) {
-    match request.header("Authorization", "Bearer " + token) {
-      Ok(_) => ()
-      Err(error) => return Err(error.into_nero())
-    }
-  }
-  let payload : Json = { "query": query, "variables": variables }
-  let response = match request.with_json(payload).send() {
+  self.send_request(
+    @request.Request::new(@request.Method::Post, KITSU_GRAPHQL_ENDPOINT),
+  )
+}
+
+///|
+fn[V : ToJson] GraphQLRequest::send_request(
+  self : GraphQLRequest[V],
+  request : @request.Request,
+) -> Result[Json, @types.Error_] {
+  let response = match
+    request
+    .follow_redirects(false)
+    .header("Accept", "application/json")
+    .bind(request => request.with_json(self).send()) {
     Ok(response) => response
     Err(error) => return Err(error.into_nero())
   }
@@ -50,26 +64,30 @@ fn @request.RequestError::into_nero(
 }
 
 ///|
-pub fn[T : FromJson, U] authenticated_query(
-  query : String,
-  variables : Json,
+pub fn[V : ToJson, T : FromJson, U] GraphQLRequest::send_authenticated(
+  self : GraphQLRequest[V],
   resolve : (T) -> Result[U, @types.Error_],
 ) -> Result[U, @types.Error_] {
-  let token = match @session.access_token() {
-    Ok(token) => token
-    Err(error) => return Err(error)
-  }
-  let result = execute_query(query, variables, token=Some(token))
-    .bind(json => decode_authenticated_response(json))
-    .bind(resolve)
-  match result {
-    Err(@types.Error_::Unauthorized) =>
-      @session.access_token(refresh=true)
-      .bind(token => execute_query(query, variables, token=Some(token)))
+  for refresh in [false, true] {
+    let token = match @session.access_token(refresh~) {
+      Ok(token) => token
+      Err(error) => return Err(error)
+    }
+    let result = @request.Request::new(
+        @request.Method::Post,
+        KITSU_GRAPHQL_ENDPOINT,
+      )
+      .header("Authorization", "Bearer " + token)
+      .map_err(error => error.into_nero())
+      .bind(request => self.send_request(request))
       .bind(json => decode_authenticated_response(json))
       .bind(resolve)
-    _ => result
+    match result {
+      Err(@types.Error_::Unauthorized) if !refresh => continue
+      result => return result
+    }
   }
+  Err(@types.Error_::Unauthorized)
 }
 
 ///|

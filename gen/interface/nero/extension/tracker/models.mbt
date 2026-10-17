@@ -1,4 +1,25 @@
 ///|
+priv struct ListEntriesVariables {
+  status : String
+  after : @kitsu.KitsuNullableJson[String]
+} derive(ToJson)
+
+///|
+priv struct GetEntryVariables {
+  id : String
+} derive(ToJson)
+
+///|
+priv struct MutationVariables[T] {
+  input : T
+} derive(ToJson)
+
+///|
+priv struct DeleteEntryInput {
+  id : String
+} derive(ToJson)
+
+///|
 priv struct LibraryEntryJson {
   id : String
   media : @kitsu.KitsuNullableJson[@kitsu.KitsuSeriesJson]

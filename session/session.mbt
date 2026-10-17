@@ -5,6 +5,19 @@ const TOKEN_ENDPOINT = "https://kitsu.io/api/oauth/token"
 const TOKEN_KEY = "kitsu.oauth.session"
 
 ///|
+priv struct PasswordGrant {
+  grant_type : String
+  username : String
+  password : String
+} derive(ToJson)
+
+///|
+priv struct RefreshTokenGrant {
+  grant_type : String
+  refresh_token : String
+} derive(ToJson)
+
+///|
 priv struct Token {
   access_token : String
   refresh_token : String?
@@ -75,9 +88,9 @@ fn Token::refresh(self : Token) -> Result[Token, @types.Error_] {
   guard self.refresh_token is Some(refresh_token) else {
     return Err(@types.Error_::Unauthorized)
   }
-  let payload : Json = {
-    "grant_type": "refresh_token",
-    "refresh_token": refresh_token,
+  let payload = RefreshTokenGrant::{
+    grant_type: "refresh_token",
+    refresh_token,
   }
   exchange(payload).map(renewed => {
     access_token: renewed.access_token,
@@ -86,7 +99,7 @@ fn Token::refresh(self : Token) -> Result[Token, @types.Error_] {
 }
 
 ///|
-fn exchange(payload : Json) -> Result[Token, @types.Error_] {
+fn[T : ToJson] exchange(payload : T) -> Result[Token, @types.Error_] {
   let response = match
     @request.Request::new(@request.Method::Post, TOKEN_ENDPOINT)
     .follow_redirects(false)
@@ -159,11 +172,7 @@ fn login() -> Result[Token, @types.Error_] {
   guard password is Some(password) && !password.is_empty() else {
     return Err(@types.Error_::Unauthorized)
   }
-  let payload : Json = {
-    "grant_type": "password",
-    "username": username,
-    "password": password,
-  }
+  let payload = PasswordGrant::{ grant_type: "password", username, password, }
   exchange(payload)
 }
 

@@ -3,16 +3,15 @@ pub fn list_entries(
   status : WatchStatus,
   cursor : String?,
 ) -> Result[EntriesPage, @types.Error_] {
-  let variables : Json = {
-    "status": status.to_kitsu(),
-    "after": @json.to_json(@kitsu.KitsuNullableJson::from_option(cursor)),
+  let variables = ListEntriesVariables::{
+    status: status.to_kitsu(),
+    after: @kitsu.KitsuNullableJson::from_option(cursor),
   }
   let data : ListDataJson = match
-    @kitsu.authenticated_query(
+    @kitsu.GraphQLRequest::new(
       LIST_ENTRIES_QUERY + "\n" + ENTRY_FRAGMENT,
       variables,
-      data => Ok(data),
-    ) {
+    ).send_authenticated(data => Ok(data)) {
     Ok(data) => data
     Err(error) => return Err(error)
   }
@@ -47,13 +46,12 @@ pub fn list_entries(
 
 ///|
 fn find_entry(series_id : String) -> Result[LibraryEntryJson?, @types.Error_] {
-  let variables : Json = { "id": series_id }
+  let variables = GetEntryVariables::{ id: series_id, }
   let data : EntryDataJson = match
-    @kitsu.authenticated_query(
+    @kitsu.GraphQLRequest::new(
       GET_ENTRY_QUERY + "\n" + ENTRY_FRAGMENT,
       variables,
-      data => Ok(data),
-    ) {
+    ).send_authenticated(data => Ok(data)) {
     Ok(data) => data
     Err(error) => return Err(error)
   }
@@ -105,10 +103,12 @@ pub fn save_entry(
         { ..input, media_id: Some(series_id), media_type: Some("ANIME"), },
       )
   }
-  let variables : Json = { "input": @json.to_json(input) }
-  @kitsu.authenticated_query(operation + "\n" + ENTRY_FRAGMENT, variables, (
-    data : MutationDataJson[LibraryEntryJson],
-  ) => data.result()).bind(entry => entry.into_nero())
+  let variables = MutationVariables::{ input, }
+  @kitsu.GraphQLRequest::new(operation + "\n" + ENTRY_FRAGMENT, variables)
+  .send_authenticated((data : MutationDataJson[LibraryEntryJson]) => {
+    data.result()
+  })
+  .bind(entry => entry.into_nero())
 }
 
 ///|
@@ -118,8 +118,10 @@ pub fn remove_entry(series_id : String) -> Result[Unit, @types.Error_] {
     Ok(None) => return Ok(())
     Err(error) => return Err(error)
   }
-  let variables : Json = { "input": { "id": existing.id } }
-  @kitsu.authenticated_query(REMOVE_ENTRY_MUTATION, variables, (
-    data : MutationDataJson[Json],
-  ) => data.result()).map(_ => ())
+  let variables = MutationVariables::{
+    input: DeleteEntryInput::{ id: existing.id, },
+  }
+  @kitsu.GraphQLRequest::new(REMOVE_ENTRY_MUTATION, variables)
+  .send_authenticated((data : MutationDataJson[Json]) => data.result())
+  .map(_ => ())
 }

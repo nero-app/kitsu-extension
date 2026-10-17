@@ -121,9 +121,9 @@ pub fn Request::body(self : Request, body : Bytes) -> Request {
 }
 
 ///|
-pub fn Request::with_json(self : Request, value : Json) -> Request {
+pub fn[T : ToJson] Request::with_json(self : Request, value : T) -> Request {
   self.headers.push(("Content-Type", "application/json; charset=UTF-8"))
-  self.body(@utf8.encode(value.stringify()))
+  self.body(@utf8.encode(@json.to_json(value).stringify()))
 }
 
 ///|
