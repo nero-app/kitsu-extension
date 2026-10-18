@@ -1,4 +1,7 @@
 import {
+  "moonbitlang/core/debug",
+  "kitsu_extractor/interface/wasi/logging/logging",
+  "kitsu_extractor/interface/wasi/clocks/monotonic-clock" @clock,
   "kitsu_extractor/interface/wasi/http/types" @http,
   "kitsu_extractor/interface/wasi/http/outgoing-handler" @outgoing,
   "kitsu_extractor/interface/wasi/io/streams",

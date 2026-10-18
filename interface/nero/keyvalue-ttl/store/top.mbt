@@ -7,14 +7,22 @@ pub(all) enum Error_ {
   AccessDenied
   StorageLimitExceeded
   Other(String)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Error_ with Debug::{to_repr}
 
 ///|
 /// A response to a `list-keys` operation.
 pub(all) struct KeyResponse {
   keys : Array[String]
   cursor : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend KeyResponse with Debug::{to_repr}
 
 ///|
 /// A bucket is a collection of key-value pairs with automatic expiration support.
@@ -27,7 +35,11 @@ pub(all) struct KeyResponse {
 /// depending on the specific key-value store implementation (e.g. table, hash, collection,
 /// bucket, container). In this interface, we use the term `bucket` to refer to a collection
 /// of key-value pairs.
-pub(all) struct Bucket(Int32)
+pub(all) struct Bucket(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend Bucket with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.

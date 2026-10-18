@@ -13,7 +13,11 @@ pub(all) enum Method {
   Trace
   Patch
   Other(String)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Method with Debug::{to_repr}
 
 ///|
 /// This type corresponds to HTTP standard Related Schemes.
@@ -21,28 +25,44 @@ pub(all) enum Scheme {
   Http
   Https
   Other(String)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Scheme with Debug::{to_repr}
 
 ///|
 /// Defines the case payload type for `DNS-error` above:
 pub(all) struct DnsErrorPayload {
   rcode : String?
   info_code : UInt32?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend DnsErrorPayload with Debug::{to_repr}
 
 ///|
 /// Defines the case payload type for `TLS-alert-received` above:
 pub(all) struct TlsAlertReceivedPayload {
   alert_id : Byte?
   alert_message : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend TlsAlertReceivedPayload with Debug::{to_repr}
 
 ///|
 /// Defines the case payload type for `HTTP-response-{header,trailer}-size` above:
 pub(all) struct FieldSizePayload {
   field_name : String?
   field_size : UInt32?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend FieldSizePayload with Debug::{to_repr}
 
 ///|
 /// These cases are inspired by the IANA HTTP Proxy Error Types:
@@ -87,7 +107,11 @@ pub(all) enum ErrorCode {
   LoopDetected
   ConfigurationError
   InternalError(String?)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend ErrorCode with Debug::{to_repr}
 
 ///|
 /// This type enumerates the different kinds of errors that may occur when
@@ -96,7 +120,11 @@ pub(all) enum HeaderError {
   InvalidSyntax
   Forbidden
   Immutable
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend HeaderError with Debug::{to_repr}
 
 ///|
 /// This following block defines the `fields` resource which corresponds to
@@ -109,7 +137,11 @@ pub(all) enum HeaderError {
 /// `incoming-request.headers`, `outgoing-request.headers`) might be
 /// immutable. In an immutable fields, the `set`, `append`, and `delete`
 /// operations will fail with `header-error.immutable`.
-pub(all) struct Fields(Int32)
+pub(all) struct Fields(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend Fields with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -120,7 +152,11 @@ pub fn Fields::drop(self : Fields) -> Unit {
 
 ///|
 /// Represents an incoming HTTP Request.
-pub(all) struct IncomingRequest(Int32)
+pub(all) struct IncomingRequest(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend IncomingRequest with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -131,7 +167,11 @@ pub fn IncomingRequest::drop(self : IncomingRequest) -> Unit {
 
 ///|
 /// Represents an outgoing HTTP Request.
-pub(all) struct OutgoingRequest(Int32)
+pub(all) struct OutgoingRequest(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend OutgoingRequest with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -147,7 +187,11 @@ pub fn OutgoingRequest::drop(self : OutgoingRequest) -> Unit {
 ///
 /// These timeouts are separate from any the user may use to bound a
 /// blocking call to `wasi:io/poll.poll`.
-pub(all) struct RequestOptions(Int32)
+pub(all) struct RequestOptions(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend RequestOptions with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -162,7 +206,11 @@ pub fn RequestOptions::drop(self : RequestOptions) -> Unit {
 /// This resource is used by the `wasi:http/incoming-handler` interface to
 /// allow a Response to be sent corresponding to the Request provided as the
 /// other argument to `incoming-handler.handle`.
-pub(all) struct ResponseOutparam(Int32)
+pub(all) struct ResponseOutparam(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend ResponseOutparam with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -173,7 +221,11 @@ pub fn ResponseOutparam::drop(self : ResponseOutparam) -> Unit {
 
 ///|
 /// Represents an incoming HTTP Response.
-pub(all) struct IncomingResponse(Int32)
+pub(all) struct IncomingResponse(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend IncomingResponse with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -191,7 +243,11 @@ pub fn IncomingResponse::drop(self : IncomingResponse) -> Unit {
 /// an `input-stream` and the delivery of trailers as a `future-trailers`,
 /// and ensures that the user of this interface may only be consuming either
 /// the body contents or waiting on trailers at any given time.
-pub(all) struct IncomingBody(Int32)
+pub(all) struct IncomingBody(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend IncomingBody with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -206,7 +262,11 @@ pub fn IncomingBody::drop(self : IncomingBody) -> Unit {
 /// In the case that the incoming HTTP Request or Response did not have any
 /// trailers, this future will resolve to the empty set of trailers once the
 /// complete Request or Response body has been received.
-pub(all) struct FutureTrailers(Int32)
+pub(all) struct FutureTrailers(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend FutureTrailers with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -217,7 +277,11 @@ pub fn FutureTrailers::drop(self : FutureTrailers) -> Unit {
 
 ///|
 /// Represents an outgoing HTTP Response.
-pub(all) struct OutgoingResponse(Int32)
+pub(all) struct OutgoingResponse(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend OutgoingResponse with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -243,7 +307,11 @@ pub fn OutgoingResponse::drop(self : OutgoingResponse) -> Unit {
 /// error to the HTTP protocol by whatever means it has available,
 /// including: corrupting the body on the wire, aborting the associated
 /// Request, or sending a late status code for the Response.
-pub(all) struct OutgoingBody(Int32)
+pub(all) struct OutgoingBody(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend OutgoingBody with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -258,7 +326,11 @@ pub fn OutgoingBody::drop(self : OutgoingBody) -> Unit {
 ///
 /// This resource is returned by the `wasi:http/outgoing-handler` interface to
 /// provide the HTTP Response corresponding to the sent Request.
-pub(all) struct FutureIncomingResponse(Int32)
+pub(all) struct FutureIncomingResponse(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend FutureIncomingResponse with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.

@@ -4,10 +4,18 @@
 pub(all) enum StreamError {
   LastOperationFailed(@error.Error_)
   Closed
-}
+} derive(Debug)
 
 ///|
-pub(all) struct InputStream(Int32)
+#deprecated
+pub extend StreamError with Debug::{to_repr}
+
+///|
+pub(all) struct InputStream(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend InputStream with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.
@@ -17,7 +25,11 @@ pub fn InputStream::drop(self : InputStream) -> Unit {
 }
 
 ///|
-pub(all) struct OutputStream(Int32)
+pub(all) struct OutputStream(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend OutputStream with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.

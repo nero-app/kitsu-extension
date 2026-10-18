@@ -6,6 +6,7 @@ world bindings {
     include nero:portal/imports@0.1.0-draft-2026-10-15;
 
     import wasi:http/outgoing-handler@0.2.7;
+    import wasi:logging/logging@0.1.0-draft;
 
     export nero:extension/tracker@0.1.0-draft-2026-10-15;
 }

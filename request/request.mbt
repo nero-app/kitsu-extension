@@ -1,4 +1,7 @@
 ///|
+const LOG_CONTEXT : String = "request"
+
+///|
 pub(all) enum RequestError {
   Http(@http.ErrorCode)
   InvalidUrl(String)
@@ -21,7 +24,10 @@ pub(all) enum Method {
   Trace
   Patch
   Other(String)
-}
+} derive(Debug)
+
+///|
+pub extend Method with @debug.Debug::{to_repr}
 
 ///|
 fn Method::to_wasi(self : Method) -> @http.Method {
@@ -42,7 +48,7 @@ fn Method::to_wasi(self : Method) -> @http.Method {
 ///|
 pub fn RequestError::message(self : RequestError) -> String {
   match self {
-    Http(_) => "HTTP transport error"
+    Http(code) => "HTTP transport error: " + @debug.to_string(code)
     InvalidUrl(message) => message
     InvalidHeader(message) => message
     Io(message) => message
@@ -135,22 +141,83 @@ pub fn Request::follow_redirects(self : Request, enabled : Bool) -> Request {
 ///|
 pub fn Request::send(self : Request) -> Result[Response, RequestError] {
   let mut url = self.url
+  let method_name = @debug.to_string(self.method_)
   for redirects = 0; redirects < 6; redirects = redirects + 1 {
+    let started = @clock.now()
+    @logging.log(
+      @logging.Level::DEBUG,
+      LOG_CONTEXT,
+      "Requesting \{url} (\{method_name}, attempt \{redirects + 1}).",
+    )
     let response = match self.execute(url) {
       Ok(response) => response
-      Err(error) => return Err(error)
+      Err(error) => {
+        @logging.log(
+          @logging.Level::ERROR,
+          LOG_CONTEXT,
+          "Request to \{url} failed after \{elapsed_ms(started)} ms: \{error.message()}.",
+        )
+        return Err(error)
+      }
+    }
+    @logging.log(
+      if response.status_code >= 400U {
+        @logging.Level::WARN
+      } else {
+        @logging.Level::DEBUG
+      },
+      LOG_CONTEXT,
+      "Received \{response.status_code} from \{url} (\{response.body.length()} bytes, \{elapsed_ms(started)} ms).",
+    )
+    let is_redirect = match response.status_code {
+      301 | 302 | 303 | 307 | 308 => true
+      _ => false
     }
     if !self.follow_redirects ||
       response.status_code < 300U ||
       response.status_code > 399U {
+      if is_redirect && !self.follow_redirects {
+        @logging.log(
+          @logging.Level::DEBUG,
+          LOG_CONTEXT,
+          "Not following redirect (\{response.status_code}) from \{url}.",
+        )
+      }
       return Ok(response)
     }
     match response.header("Location") {
-      Some(location) => url = resolve_redirect(url, location)
-      None => return Ok(response)
+      Some(location) => {
+        let destination = resolve_redirect(url, location)
+        @logging.log(
+          @logging.Level::DEBUG,
+          LOG_CONTEXT,
+          "Redirecting (\{response.status_code}) to \{destination}.",
+        )
+        url = destination
+      }
+      None => {
+        if is_redirect {
+          @logging.log(
+            @logging.Level::WARN,
+            LOG_CONTEXT,
+            "Redirect (\{response.status_code}) from \{url} has no Location header.",
+          )
+        }
+        return Ok(response)
+      }
     }
   }
+  @logging.log(
+    @logging.Level::ERROR,
+    LOG_CONTEXT,
+    "Too many redirects while requesting \{self.url} (6 attempts).",
+  )
   Err(TooManyRedirects)
+}
+
+///|
+fn elapsed_ms(started : UInt64) -> String {
+  ((@clock.now() - started) / 1000000UL).to_string()
 }
 
 ///|
@@ -189,6 +256,11 @@ fn Request::execute(
     return Err(InvalidUrl("invalid URL path"))
   }
   if self.body is Some(body) {
+    @logging.log(
+      @logging.Level::TRACE,
+      LOG_CONTEXT,
+      "Writing HTTP request body (\{body.length()} bytes).",
+    )
     let outgoing_body = match outgoing.body() {
       Ok(body) => body
       Err(_) => return Err(Io("could not open request body"))
@@ -207,11 +279,21 @@ fn Request::execute(
       Err(error) => return Err(Http(error))
     }
   }
+  @logging.log(
+    @logging.Level::TRACE,
+    LOG_CONTEXT,
+    "Sending HTTP request to \{authority}.",
+  )
   let future = match @outgoing.handle(outgoing, None) {
     Ok(future) => future
     Err(error) => return Err(Http(error))
   }
   let pollable = future.subscribe()
+  @logging.log(
+    @logging.Level::TRACE,
+    LOG_CONTEXT,
+    "Waiting for HTTP response from \{authority}.",
+  )
   pollable.block()
   pollable.drop()
   let incoming = match future.get() {
@@ -248,6 +330,11 @@ fn Request::execute(
     }
   }
   let content = @buffer.Buffer(size_hint=65536)
+  @logging.log(
+    @logging.Level::TRACE,
+    LOG_CONTEXT,
+    "Reading HTTP response from \{authority}.",
+  )
   for ;; {
     match input.blocking_read(65536UL) {
       Ok(chunk) => content.write_bytes(Bytes::from_array(chunk))

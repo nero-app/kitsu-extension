@@ -1,4 +1,5 @@
 import {
+  "kitsu_extractor/interface/wasi/logging/logging",
   "kitsu_extractor/request",
   "kitsu_extractor/interface/nero/extension/types",
   "kitsu_extractor/interface/nero/portal/interaction",

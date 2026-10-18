@@ -7,7 +7,11 @@ pub(all) enum Severity {
   INFO
   WARNING
   ERROR
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Severity with Debug::{to_repr}
 
 ///|
 pub fn Severity::ordinal(self : Severity) -> Int32 {
@@ -37,7 +41,11 @@ pub(all) struct TextRequest {
   initial_value : String?
   sensitive : Bool
   reference : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend TextRequest with Debug::{to_repr}
 
 ///|
 /// One of the answers offered by a selection request.
@@ -45,7 +53,11 @@ pub(all) struct ChoiceItem {
   label : String
   detail : String?
   preselected : Bool
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend ChoiceItem with Debug::{to_repr}
 
 ///|
 /// A request to choose among a fixed set of answers.
@@ -55,7 +67,11 @@ pub(all) struct SelectionRequest {
   severity : Severity
   choices : Array[ChoiceItem]
   allow_multiple : Bool
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend SelectionRequest with Debug::{to_repr}
 
 ///|
 /// A standing indication that work is under way, and optionally a means
@@ -68,7 +84,11 @@ pub(all) struct SelectionRequest {
 /// Failing to do so leaves the indication in place: nothing is interrupted
 /// and no error is raised, but the person is told work continues that has
 /// already finished.
-pub(all) struct Progress(Int32)
+pub(all) struct Progress(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend Progress with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.

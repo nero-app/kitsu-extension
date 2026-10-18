@@ -6,7 +6,7 @@ fetch:
 	cd wit && wkg fetch . --type wit
 
 generate:
-	wit-bindgen moonbit -w bindings --project-name kitsu_extractor --ignore-stub --ignore-module-file --out-dir . wit
+	wit-bindgen moonbit --derive-debug -w bindings --project-name kitsu_extractor --ignore-stub --ignore-module-file --out-dir . wit
 	sed -i 's/@types/@http/g' interface/nero/extension/types/moon.pkg interface/nero/extension/types/*.mbt
 	$(MOON) fmt
 

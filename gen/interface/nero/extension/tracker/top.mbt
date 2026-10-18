@@ -8,7 +8,11 @@ pub(all) enum WatchStatus {
   ON_HOLD
   DROPPED
   PLAN_TO_WATCH
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend WatchStatus with Debug::{to_repr}
 
 ///|
 pub fn WatchStatus::ordinal(self : WatchStatus) -> Int32 {
@@ -40,7 +44,11 @@ pub(all) struct EntryDetails {
   score : Byte?
   repeat_count : UInt32
   notes : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend EntryDetails with Debug::{to_repr}
 
 ///|
 /// A tracked series together with its stored tracking information.
@@ -48,14 +56,22 @@ pub(all) struct Entry {
   series : @types.Series
   status : WatchStatus
   details : EntryDetails
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Entry with Debug::{to_repr}
 
 ///|
 /// One page of tracked entries.
 pub(all) struct EntriesPage {
   entries : Array[Entry]
   cursor : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend EntriesPage with Debug::{to_repr}
 
 ///|
 /// Returns one page of entries having the given viewing state.

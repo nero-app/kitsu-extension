@@ -8,7 +8,11 @@ pub(all) enum Error_ {
   Forbidden
   Http(@http.ErrorCode)
   Other(String?)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Error_ with Debug::{to_repr}
 
 ///|
 /// Represents a media resource that can be retrieved through different protocols.
@@ -19,7 +23,11 @@ pub(all) enum Error_ {
 pub(all) enum MediaResource {
   HttpRequest(@http.OutgoingRequest)
   MagnetUri(String)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend MediaResource with Debug::{to_repr}
 
 ///|
 /// Represents a series with its basic details.
@@ -29,7 +37,11 @@ pub(all) struct Series {
   poster_resource : MediaResource?
   synopsis : String?
   type_ : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Series with Debug::{to_repr}
 
 ///|
 /// Represents a page of series results, including pagination information.
@@ -40,7 +52,11 @@ pub(all) struct Series {
 pub(all) struct SeriesPage {
   series : Array[Series]
   cursor : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend SeriesPage with Debug::{to_repr}
 
 ///|
 /// Represents an individual filter used in search queries.
@@ -50,7 +66,11 @@ pub(all) struct SeriesPage {
 pub(all) struct Filter {
   id : String
   display_name : String
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Filter with Debug::{to_repr}
 
 ///|
 /// Represents a category of filters that groups multiple related filters under a common type.
@@ -61,7 +81,11 @@ pub(all) struct FilterCategory {
   id : String
   display_name : String
   filters : Array[Filter]
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend FilterCategory with Debug::{to_repr}
 
 ///|
 /// Represents a filter to be used specifically in the `search` method.
@@ -71,7 +95,11 @@ pub(all) struct FilterCategory {
 pub(all) struct SearchFilter {
   id : String
   values : Array[String]
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend SearchFilter with Debug::{to_repr}
 
 ///|
 /// Represents an episode of a series.
@@ -81,7 +109,11 @@ pub(all) struct Episode {
   title : String?
   thumbnail_resource : MediaResource?
   description : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Episode with Debug::{to_repr}
 
 ///|
 /// Represents a page of episode results, including pagination information.
@@ -92,7 +124,11 @@ pub(all) struct Episode {
 pub(all) struct EpisodesPage {
   episodes : Array[Episode]
   cursor : String?
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend EpisodesPage with Debug::{to_repr}
 
 ///|
 /// Represents a video stream for a specific episode.
@@ -100,4 +136,8 @@ pub(all) struct Video {
   media_resource : MediaResource
   server : String
   resolution : (UInt32, UInt32)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend Video with Debug::{to_repr}

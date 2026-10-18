@@ -5,14 +5,22 @@
 pub(all) enum ListenError {
   Unsupported
   Other(String)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend ListenError with Debug::{to_repr}
 
 ///|
 /// Why nothing was delivered.
 pub(all) enum ReceiveError {
   Expired
   Other(String)
-}
+} derive(Debug)
+
+///|
+#deprecated
+pub extend ReceiveError with Debug::{to_repr}
 
 ///|
 /// An address set aside for the caller, and the means of receiving a
@@ -29,7 +37,11 @@ pub(all) enum ReceiveError {
 /// address can be read. A URI may be delivered the moment the address is
 /// known to anyone else, and a listener established after the fact would
 /// miss it.
-pub(all) struct Listener(Int32)
+pub(all) struct Listener(Int32) derive(Debug)
+
+///|
+#deprecated
+pub extend Listener with Debug::{to_repr}
 
 ///|
 /// Drops a resource handle.

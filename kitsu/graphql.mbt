@@ -1,4 +1,7 @@
 ///|
+const GRAPHQL_LOG_CONTEXT : String = "graphql"
+
+///|
 const KITSU_GRAPHQL_ENDPOINT = "https://kitsu.io/api/graphql"
 
 ///|
@@ -50,7 +53,16 @@ fn[V : ToJson] GraphQLRequest::send_request(
       )
     _ => ()
   }
-  response.json().map_err(error => error.into_nero())
+  response
+  .json()
+  .map_err(error => {
+    @logging.log(
+      @logging.Level::WARN,
+      GRAPHQL_LOG_CONTEXT,
+      "Could not read the Kitsu GraphQL response: \{error.message()}.",
+    )
+    error.into_nero()
+  })
 }
 
 ///|
@@ -83,7 +95,14 @@ pub fn[V : ToJson, T : FromJson, U] GraphQLRequest::send_authenticated(
       .bind(json => decode_authenticated_response(json))
       .bind(resolve)
     match result {
-      Err(@types.Error_::Unauthorized) if !refresh => continue
+      Err(@types.Error_::Unauthorized) if !refresh => {
+        @logging.log(
+          @logging.Level::DEBUG,
+          GRAPHQL_LOG_CONTEXT,
+          "Authentication rejected; retrying the GraphQL request with a renewed session.",
+        )
+        continue
+      }
       result => return result
     }
   }

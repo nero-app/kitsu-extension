@@ -7,6 +7,11 @@ priv struct SearchAnime {
 
 ///|
 fn SearchAnime::execute(self : SearchAnime) -> Result[Json, @types.Error_] {
+  @logging.log(
+    @logging.Level::DEBUG,
+    GRAPHQL_LOG_CONTEXT,
+    "Executing SearchAnime query.",
+  )
   let query : String =
     #|query SearchAnime($title: String!, $first: Int!, $after: String) {
     #|  searchAnimeByTitle(title: $title, first: $first, after: $after) {
@@ -30,6 +35,11 @@ priv struct GetAnimeInfo {
 
 ///|
 fn GetAnimeInfo::execute(self : GetAnimeInfo) -> Result[Json, @types.Error_] {
+  @logging.log(
+    @logging.Level::DEBUG,
+    GRAPHQL_LOG_CONTEXT,
+    "Executing AnimeInfo query.",
+  )
   let query : String =
     #|query AnimeInfo($id: ID!) {
     #|  findAnimeById(id: $id) {
@@ -54,6 +64,11 @@ priv struct GetAnimeEpisodes {
 fn GetAnimeEpisodes::execute(
   self : GetAnimeEpisodes,
 ) -> Result[Json, @types.Error_] {
+  @logging.log(
+    @logging.Level::DEBUG,
+    GRAPHQL_LOG_CONTEXT,
+    "Executing AnimeEpisodes query.",
+  )
   let query : String =
     #|query AnimeEpisodes($id: ID!, $first: Int!, $after: String) {
     #|  findAnimeById(id: $id) {
